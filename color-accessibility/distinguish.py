@@ -21,7 +21,7 @@ def relative_luminance(hue:np.array):
 def contrast_ratio(img: Image) -> float:
     thief = IMColorThief(img)
     palette = thief.get_palette(color_count=2, quality=1)
-    print(f"palette: {palette}")
+    print(f"palette: {palette[:2]}")
     color1, color2 = np.array(palette[0]), np.array(palette[1])
     rlum1 = relative_luminance(color1)
     rlum2 = relative_luminance(color2)
