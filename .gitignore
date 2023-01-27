@@ -1,2 +1,4 @@
 venv/*
-*.txt
+ideas.txt
+*.pyc
+*.egg-info/*
