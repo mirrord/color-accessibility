@@ -12,10 +12,8 @@ def cli():
     if args.image:
         from PIL import Image
         with Image.open(args.image) as img:
-            if distinguish.AA_test(img)[0]:
-                print(f"image {str(args.image.absolute())} passed!")
-            else:
-                print(f"image {str(args.image.absolute())} failed!")
+            anal_image = distinguish.additive_analysis(img)
+            anal_image.show()
 
     if args.pdf:
         from . import pdf_parse

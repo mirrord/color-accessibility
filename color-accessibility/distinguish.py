@@ -47,40 +47,8 @@ def contrast_ratio(img: Image):
     rat = rlum1/rlum2 if rlum1>rlum2 else rlum2/rlum1
     return rat, tuple(color1), tuple(color2)
 
-def crop_text(img: Image) -> int:
-    grey_img = img.convert('L')
-    thresh_img = grey_img.point(lambda p: p > 140 and 255)
-    tres = tesseract.image_to_data(thresh_img, output_type=tesseract.Output.DICT)
-    index = -1
-    for idx, text in enumerate(tres["text"]):
-        if text.isalpha() and len(text) > 3:
-            print(f"text found: {text}")
-            index = idx
-            break
-    if index == -1:
-        return None
-    (left, top, width, height) = (tres['left'][index], tres['top'][index], tres['width'][index], tres['height'][index])
-    cropped = img.crop((left, top, left+width, top+height))
-    enhancer = ImageEnhance.Sharpness(cropped)
-    return enhancer.enhance(5)
-
-def AA_test(img: Image):
-    reg_text_threshold = 4.5
-    big_text_threshold = 3
-    timg = crop_text(img)
-    if timg is None:
-        print("no text found")
-        return False, 0, None, None
-    cratio, c1, c2 = contrast_ratio(timg)
-    print(f"contrast ratio: {cratio:2.1f}")
-    if cratio == -1:
-        print("WARNING: empty or malformed image")
-        return False, 0, None, None
-    if big_text_threshold < cratio < reg_text_threshold:
-        print("Double check your font size - font sizes less than 18 are not compliant.")
-    return cratio > reg_text_threshold, cratio, c1, c2
-
 def additive_analysis(img: Image):
+    '''return the same image, but with individual words underlined with either bluegreen (pass), amber (unsure), or red (fail).'''
     RED = (255, 85, 25)
     YELLOW = (255, 200, 0)
     GREEN = (12, 170, 180)
@@ -109,6 +77,7 @@ def additive_analysis(img: Image):
     return annotated_img
 
 def additive_block_analysis(img: Image):
+    '''as additive_analysis, but draws boxes around groupings of words and attempts to analyze them as a group.'''
     RED = (255, 85, 25)
     YELLOW = (255, 200, 0)
     GREEN = (12, 170, 180)
